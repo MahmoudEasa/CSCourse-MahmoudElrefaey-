@@ -130,7 +130,7 @@ https://ideone.com/XLPYcO
 //
 //
 
-// Second Task
+// // Second Task
 // int readNumOfDay() {
 //   int numOfDay = 0;
 //   int isScaned = 0;
@@ -140,8 +140,8 @@ https://ideone.com/XLPYcO
 
 //   while ((numOfDay <= 0 || numOfDay > 7)) {
 //     if (isScaned != 1) {
-//       while (getchar() != '\n')
-//         ;
+//       while (getchar() != '\n');
+      
 //       printf("Error!Please Enter a Number: ");
 //     } else {
 //       printf("Please Enter Number Of Day From 1 To 7: ");
