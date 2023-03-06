@@ -18,29 +18,30 @@ typedef struct Clients
 {
   char name[30];
   char password[20];
-  short status;
+  char status;
   Accounts accounts[ACCOUNTS];
 }Clients;
 
 void fillDataToStruct(Clients c[]);
 void login(char name[], char password[]);
-char *welcome(char *name);
+char welcome(char *name);
 int filterClientWithName(char name_input[], Clients c[]);
 char readCurrency();
 int readAmount();
+void readStatus(char name_change_status[], char *status);
 int readId();
 float currencyConvert(char currency, float amount);
 int checkIdInStruct(int id,  Accounts a[]);
 void withdraw(Accounts a[], int id, float amount, char currency_amount);
 void deposit(Accounts a[], int id, float amount, char currency_amount);
 void transfer(Clients c[], Accounts a[], int id_from, int id_to, float amount, char currency_amount);
-void changeStatus(Clients c[], char name_input[], short status_change);
+void changeStatus(Clients c[], char name_input[], char status_change);
 
 int main() {
   int id_from, id_to;
   char currency = 'E';
   float amount = 0;
-  short status = 0;
+  char status = '0';
   Clients client[CLIENTS];
   Clients *ptr_client = client;
   fillDataToStruct(ptr_client);
@@ -51,43 +52,46 @@ int main() {
   int client_index = filterClientWithName(name_login, ptr_client);
   
   if(client_index > -1 &&
-        strcmp(password_login, client[client_index].password) == 0 && client[client_index].status == 1){
-    char *make = welcome(name_login);
+        strcmp(password_login, client[client_index].password) == 0 && client[client_index].status == '1'){
+    char make = welcome(name_login);
     Clients client_filter = client[client_index];
 
-    if(strcmp(make, "Withdraw Balance") == 0){
+    switch (make)
+    {
+    case '1':
+    case '2':
+    case '3':
       currency = readCurrency();
       amount = readAmount();
       printf("Please Enter Your Account Id: ");
       id_from = readId();
+    }
+
+    switch (make)
+    {
+    case '1':
       withdraw(client_filter.accounts, id_from, amount, currency);
-    }else if(strcmp(make, "Deposit Balance") == 0){
-      currency = readCurrency();
-      amount = readAmount();
-      printf("Please Enter Your Account Id: ");
-      id_from = readId();
+      break;
+    case '2':
       deposit(client_filter.accounts, id_from, amount, currency);
-    }else if(strcmp(make, "Transfer Balance") == 0){
-      currency = readCurrency();
-      amount = readAmount();
-      printf("Please Enter Your Account Id: ");
-      id_from = readId();
+      break;
+    case '3':
       printf("Please Enter Account Id to transfer to: ");
       id_to = readId();
       transfer(ptr_client, client_filter.accounts, id_from, id_to, amount, currency);
-    }else if(strcmp(make, "Change Status") == 0){
-      printf("Please enter client name to change status: ");
-      gets(name_change_status);
-      printf("Please Enter Status: ");
-      scanf("%hd", &status);
+      break;
+    case '4':
+      readStatus(name_change_status, &status);
       changeStatus(ptr_client, name_change_status, status);
-    }else
-      printf("There is no service with this name");
+      break;
+    default:
+      printf("There is no service with this number");
+    }
   } else {
-    if(client[client_index].status == 0)
-      printf("Your Account Is Pending");
+    if(client_index != -1 && client[client_index].status == 0)
+      printf("Your Account Is Pending\n");
     else
-      printf("Something is wrong");
+      printf("Something is wrong\n");
   }
 
   return 0;
@@ -100,8 +104,8 @@ void fillDataToStruct(Clients c[])
   strcpy(c[0].password, "123");
   strcpy(c[1].password, "123");
 
-  c[0].status = 1;
-  c[1].status = 0;
+  c[0].status = '1';
+  c[1].status = '0';
 
   c[0].accounts[0].id = 123;
   c[0].accounts[1].id = 234;
@@ -128,17 +132,17 @@ void login(char name[], char password[])
   gets(password);
 }
 
-char *welcome(char *name)
+char welcome(char *name)
 {
-  static char make[20];
+  char make;
   printf("Welcome %s\n", name);
-  printf("What do want you to do? \n");
+  printf("What do want you to do? Choose Number [1,2,3,4]: \n");
   printf("1- Withdraw Balance\n");
   printf("2- Deposit Balance\n");
   printf("3- Transfer Balance\n");
   printf("4- Change Status\n");
   
-  gets(make);
+  scanf(" %c", &make);
   return make;
 }
 
@@ -182,6 +186,15 @@ int readAmount()
   }
 
   return amount;
+}
+
+void readStatus(char name_change_status[], char *status)
+{
+  while (getchar() != '\n');
+  printf("Please enter client name to change status: ");
+  gets(name_change_status);
+  printf("Please Enter Status: ");
+  scanf(" %c", status);
 }
 
 int readId(){
@@ -257,7 +270,6 @@ void deposit(Accounts a[], int id, float amount, char currency_amount)
   }
 }
 
-
 void transfer(Clients c[], Accounts a[], int id_from, int id_to, float amount, char currency_amount)
 {
   int index_from = checkIdInStruct(id_from, a);
@@ -313,7 +325,7 @@ void transfer(Clients c[], Accounts a[], int id_from, int id_to, float amount, c
     printf("Something is wrong");
 }
 
-void changeStatus(Clients c[], char name_input[], short status_change)
+void changeStatus(Clients c[], char name_input[], char status_change)
 {
   int client_fillter = filterClientWithName(name_input, c);
 
@@ -328,7 +340,6 @@ void changeStatus(Clients c[], char name_input[], short status_change)
 
 // المفروض في رسائل الإيرور دائماً أكتب شيء لا يوضح للمستخدم إيه اللي بيحصل للأمان علشان كده بكتب
 // Something is wrong
-
 
 /*
   Task
